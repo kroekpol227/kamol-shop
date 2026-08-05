@@ -47,15 +47,7 @@
             border: 1px solid var(--border-color);
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 13px;
-            margin-bottom: 10px;
-            color: #44403c;
-            line-height: 1.4;
-        }
+        .info-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; margin-bottom: 10px; color: #44403c; line-height: 1.4; }
         .info-item:last-child { margin-bottom: 0; }
         .info-item i { color: var(--accent-gold); font-size: 15px; margin-top: 2px; }
         .contact-btns { display: flex; gap: 8px; margin-top: 12px; }
@@ -120,18 +112,40 @@
         .cat-tree-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #fafaf9; border-radius: 6px; margin-bottom: 4px; font-size: 13px; }
         .cat-tree-item.child { margin-left: 15px; border-left: 2px solid var(--accent-gold); }
 
-        /* Lightbox Image Preview Modal */
+        /* --- ปรับปรุง LIGHTBOX สำหรับจอมือถือโดยเฉพาะ --- */
         .image-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;
-            padding: 10px; overflow-y: auto;
+            background: rgba(0, 0, 0, 0.9); z-index: 2000;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; overflow-y: auto;
         }
-        .image-modal-content { position: relative; max-width: 95%; max-height: 95vh; margin: auto; }
-        .image-modal-content img { width: 100%; max-width: 500px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+        .image-modal-wrapper {
+            position: relative; max-width: 100%; max-height: 100%; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .image-modal-content {
+            position: relative; max-width: 100%; max-height: 85vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; border-radius: 8px;
+        }
+        .image-modal-content img {
+            max-width: 100%; max-height: 80vh; object-fit: contain;
+            border-radius: 8px; cursor: zoom-in; transition: transform 0.25s ease;
+        }
+        /* คลาสสำหรับการขยาย/ซูมดูรูปยาวแบบชัดๆ */
+        .image-modal-content img.zoomed {
+            max-height: none !important; width: 100% !important;
+            cursor: zoom-out;
+        }
         .close-image-btn {
-            position: fixed; top: 15px; right: 20px; color: white; font-size: 28px;
-            cursor: pointer; background: rgba(0,0,0,0.5); width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2010;
+            position: absolute; top: -12px; right: -12px; color: white;
+            background: #ef4444; width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 2010;
+        }
+        .image-hint {
+            color: #d6d3d1; font-size: 11px; margin-top: 10px; text-align: center;
+            background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px;
         }
     </style>
 </head>
@@ -233,7 +247,7 @@
         </div>
     </div>
 
-    <!-- Modal: Add Product (อัปเดตช่องเลือกไฟล์รูปภาพ) -->
+    <!-- Modal: Add Product -->
     <div class="modal" id="productModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -264,11 +278,14 @@
         </div>
     </div>
 
-    <!-- Modal: Lightbox Full Image View -->
+    <!-- Modal: Lightbox Full Image View (ปรับปรุงเพื่อจอมือถือ) -->
     <div class="image-modal" id="imageModal" onclick="closeImageModal()">
-        <span class="close-image-btn" onclick="closeImageModal()"><i class="fa-solid fa-xmark"></i></span>
-        <div class="image-modal-content" onclick="event.stopPropagation()">
-            <img id="fullImage" src="" alt="รูปขยายเต็มจอ">
+        <div class="image-modal-wrapper" onclick="event.stopPropagation()">
+            <span class="close-image-btn" onclick="closeImageModal()"><i class="fa-solid fa-xmark"></i></span>
+            <div class="image-modal-content">
+                <img id="fullImage" src="" alt="รูปขยาย" onclick="toggleZoomImage(this)">
+            </div>
+            <div class="image-hint"><i class="fa-solid fa-hand-pointer"></i> แตะที่รูปเพื่อขยาย/ซูมดูข้อความ</div>
         </div>
     </div>
 
@@ -285,14 +302,22 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        /* ระบบดูภาพใหญ่สำหรับมือถือ */
         function openImageModal(url) {
             if(!url) return;
-            document.getElementById('fullImage').src = url;
+            const img = document.getElementById('fullImage');
+            img.src = url;
+            img.classList.remove('zoomed'); // รีเซ็ตสถานะซูม
             document.getElementById('imageModal').style.display = 'flex';
         }
+        
         function closeImageModal() {
             document.getElementById('imageModal').style.display = 'none';
             document.getElementById('fullImage').src = '';
+        }
+
+        function toggleZoomImage(img) {
+            img.classList.toggle('zoomed');
         }
 
         function applyAdminState() {
@@ -450,11 +475,10 @@
         async function deleteCategory(id) {
             if(!confirm('ยืนยันลบหมวดหมู่นี้?')) return;
             const { error } = await _supabase.from('categories').delete().eq('id', id);
-            if (error) alert('ลบหมวดหมู่ไม่สำเร็จ (อาจมีสินค้าหรือหมวดหมู่อย่อยอยู่): ' + error.message);
+            if (error) alert('ลบหมวดหมู่ไม่สำเร็จ: ' + error.message);
             else loadCategories();
         }
 
-        // ฟังก์ชันเพิ่มสินค้า (รองรับอัปโหลดรูปภาพ)
         async function addProduct() {
             const name = document.getElementById('pName').value;
             const price = document.getElementById('pPrice').value;
@@ -471,13 +495,12 @@
 
             let image_url = null;
 
-            // ถ้ามีการเลือกไฟล์รูป ให้ทำการอัปโหลดไปยัง Supabase Storage
             if (file) {
                 const fileName = 'product_' + Date.now() + '_' + file.name;
                 const { error: uploadErr } = await _supabase.storage.from('images').upload(fileName, file);
                 
                 if (uploadErr) {
-                    alert('อัปโหลดรูปภาพไม่สำเร็จ: ' + uploadErr.message + '\n* กรุณาตรวจสอบว่ามี Bucket "images" ใน Supabase หรือยัง');
+                    alert('อัปโหลดรูปภาพไม่สำเร็จ: ' + uploadErr.message);
                     saveBtn.disabled = false;
                     saveBtn.innerText = 'บันทึกสินค้า';
                     return;
@@ -487,29 +510,21 @@
                 image_url = publicUrl;
             }
 
-            // บันทึกข้อมูลลงตาราง products
             const { error } = await _supabase.from('products').insert([{ 
-                name, 
-                price, 
-                original_price, 
-                badge_label, 
-                category_id,
-                image_url 
+                name, price, original_price, badge_label, category_id, image_url 
             }]);
 
             saveBtn.disabled = false;
             saveBtn.innerText = 'บันทึกสินค้า';
 
             if (error) {
-                alert('เพิ่มสินค้าไม่สำเร็จ: ' + error.message + '\n* ตรวจสอบว่าในตาราง products มีคอลัมน์ "image_url" แล้วหรือยัง');
+                alert('เพิ่มสินค้าไม่สำเร็จ: ' + error.message);
             } else {
-                // ล้างค่าใน ฟอร์ม
                 document.getElementById('pName').value = '';
                 document.getElementById('pPrice').value = '';
                 document.getElementById('pOriginalPrice').value = '';
                 document.getElementById('pBadge').value = '';
                 document.getElementById('pImage').value = '';
-                
                 closeModal('productModal');
                 loadProducts();
             }
