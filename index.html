@@ -3,454 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการสินค้าและโปรโมชั่น</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>ร้านค้าของฉัน</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --danger: #ef4444;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --card: #ffffff;
             --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --danger: #ef4444;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 40px;
-        }
-
-        header {
-            background: #ffffff;
-            border-bottom: 1px solid var(--border);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn-lock {
-            background: #e2e8f0;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: all 0.2s;
-        }
-
-        .btn-lock.active {
-            background: #dbeafe;
-            color: var(--primary);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .sidebar {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            height: fit-content;
-        }
-
-        .sidebar-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cat-item-btn {
-            padding: 8px;
-            margin: 4px 0;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
-        .cat-item-btn:hover {
-            background: #f1f5f9;
-        }
-
-        details {
-            margin-bottom: 6px;
-        }
-
-        summary {
-            cursor: pointer;
-            padding: 8px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .sub-category {
-            padding-left: 15px;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            outline: none;
-        }
-
-        .promo-section {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .promo-list {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-
-        .promo-card {
-            min-width: 200px;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .promo-card img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-        }
-
-        .product-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .product-img-box {
-            width: 100%;
-            height: 140px;
-            background: #f1f5f9;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .product-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .price {
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 5px;
-        }
-
-        .old-price {
-            color: var(--text-muted);
-            text-decoration: line-through;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-
-        .badge {
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            z-index: 2;
-        }
-
-        .btn-delete-card {
-            position: absolute;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            z-index: 2;
-        }
-
-        .btn-add {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .btn-add:hover {
-            background: var(--primary-hover);
-        }
-
-        .admin-only {
-            display: none;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top:0; left:0; right:0; bottom:0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .modal input, .modal select {
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            outline: none;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .cat-tree-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px dashed var(--border);
-        }
-
-        .cat-tree-item.child {
-            padding-left: 15px;
-            font-size: 13px;
-        }
-
-        .hint-text {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        #imageModal img {
-            max-width: 90vw;
-            max-height: 90vh;
-            border-radius: 8px;
-            transition: transform 0.25s ease;
-            cursor: zoom-in;
-        }
-
-        #imageModal img.zoomed {
-            transform: scale(1.8);
-            cursor: zoom-out;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        header { background: #fff; padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 10; }
+        .btn-lock { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; }
+        .btn-lock.active { background: #dbeafe; color: var(--primary); }
+        .main-layout { display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
+        .sidebar { width: 250px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; height: fit-content; }
+        .content { flex: 1; }
+        .search-bar { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
+        .promo-container { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
+        .promo-card { min-width: 150px; background: #fff; border: 1px solid #eee; padding: 5px; border-radius: 6px; text-align: center; position: relative; cursor: pointer; }
+        .promo-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .product-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 10px; position: relative; }
+        .product-img-box { width: 100%; height: 120px; background: #f5f5f5; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+        .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 15px; left: 15px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; z-index: 1; }
+        .price { color: var(--primary); font-weight: bold; margin-top: 5px; }
+        .old-price { text-decoration: line-through; color: #999; font-size: 11px; font-weight: normal; }
+        .cat-item-btn { padding: 6px; cursor: pointer; border-radius: 4px; }
+        .cat-item-btn:hover { background: #f0f0f0; }
+        .sub-category { padding-left: 15px; }
+        .admin-only { display: none; }
+        .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal { background: #fff; padding: 20px; border-radius: 8px; width: 300px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-delete-card { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; z-index: 2; }
+        .cat-tree-item { display: flex; justify-content: space-between; padding: 4px 0; }
+        .cat-tree-item.child { padding-left: 15px; }
+        .hint-text { font-size: 10px; color: #888; margin-top: 2px; }
+        
+        #imageModal img { max-width: 90vw; max-height: 90vh; border-radius: 8px; transition: transform 0.25s ease; cursor: zoom-in; }
+        #imageModal img.zoomed { transform: scale(1.8); cursor: zoom-out; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo"><i class="fa-solid fa-store"></i> ร้านค้าออนไลน์</div>
-        <div class="admin-controls">
-            <button class="btn-lock" id="lockBtn" onclick="openPinModal()">
-                <i class="fa-solid fa-lock" id="lockIcon"></i>
-            </button>
-        </div>
+        <h2><i class="fa-solid fa-shop"></i> My Store</h2>
+        <button class="btn-lock" id="lockBtn" onclick="openPinModal()">
+            <i class="fa-solid fa-lock" id="lockIcon"></i>
+        </button>
     </header>
 
-    <div class="container">
-        <!-- Sidebar Category -->
+    <div class="main-layout">
         <div class="sidebar">
-            <div class="sidebar-title">
-                <span><i class="fa-solid fa-list"></i> หมวดหมู่</span>
-                <button class="btn-add admin-only" onclick="openModal('catModal')"><i class="fa-solid fa-plus"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <b>หมวดหมู่</b>
+                <button class="btn-add admin-only" onclick="openModal('catModal')">+</button>
             </div>
             <div id="categoryTree"></div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="search-bar">
-                <input type="text" placeholder="ค้นหาสินค้า..." oninput="filterProducts(this.value)">
-                <button class="btn-add admin-only" onclick="openModal('productModal')"><i class="fa-solid fa-plus"></i> เพิ่มสินค้า</button>
-            </div>
+        <div class="content">
+            <input type="text" class="search-bar" placeholder="ค้นหาสินค้า..." oninput="filterProducts(this.value)">
 
-            <!-- Promotion Section -->
-            <div class="promo-section">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-weight:bold;"><i class="fa-solid fa-rectangle-ad"></i> โปรโมชั่นพิเศษ</div>
-                    <button class="btn-add admin-only" onclick="openModal('promoModal')"><i class="fa-solid fa-plus"></i> เพิ่มโปรโมชั่น</button>
-                </div>
-                <div class="promo-list" id="promoList"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <b>โปรโมชั่น</b>
+                <button class="btn-add admin-only" onclick="openModal('promoModal')">+ โปรโมชั่น</button>
             </div>
+            <div class="promo-container" id="promoList"></div>
 
-            <!-- Product Grid -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <b>สินค้าทั้งหมด</b>
+                <button class="btn-add admin-only" onclick="openModal('productModal')">+ สินค้า</button>
+            </div>
             <div class="product-grid" id="productList"></div>
         </div>
     </div>
 
-    <!-- PIN Modal -->
+    <!-- Modals -->
     <div class="modal-overlay" id="pinModal">
         <div class="modal">
-            <h3>กรอกรหัสผ่าน Admin</h3>
-            <input type="password" id="pinInput" placeholder="ใส่รหัสผ่าน (1234)">
-            <div class="modal-actions">
-                <button onclick="closeModal('pinModal')">ยกเลิก</button>
-                <button class="btn-add" onclick="verifyPin()">ตกลง</button>
-            </div>
+            <h3>Admin PIN</h3>
+            <input type="password" id="pinInput" placeholder="รหัสผ่าน">
+            <button class="btn-add" onclick="verifyPin()">ยืนยัน</button>
+            <button onclick="closeModal('pinModal')">ยกเลิก</button>
         </div>
     </div>
 
-    <!-- Category Modal -->
     <div class="modal-overlay" id="catModal">
         <div class="modal">
-            <h3>จัดการหมวดหมู่</h3>
-            <input type="text" id="newCatName" placeholder="ชื่อหมวดหมู่ใหม่">
-            <select id="parentCatSelect">
-                <option value="">-- เป็นหมวดหมู่หลัก (Root) --</option>
-            </select>
-            <button class="btn-add" onclick="addCategory()">เพิ่มหมวดหมู่</button>
+            <h3>หมวดหมู่</h3>
+            <input type="text" id="newCatName" placeholder="ชื่อหมวดหมู่">
+            <select id="parentCatSelect"><option value="">-- หมวดหมู่หลัก --</option></select>
+            <button class="btn-add" onclick="addCategory()">บันทึก</button>
             <hr>
-            <h4>รายการหมวดหมู่</h4>
-            <div id="adminCatTreeList" style="max-height: 200px; overflow-y: auto;"></div>
-            <div class="modal-actions">
-                <button onclick="closeModal('catModal')">ปิด</button>
-            </div>
+            <div id="adminCatTreeList" style="max-height: 150px; overflow-y: auto;"></div>
+            <button onclick="closeModal('catModal')">ปิด</button>
         </div>
     </div>
 
-    <!-- Product Modal -->
     <div class="modal-overlay" id="productModal">
         <div class="modal">
-            <h3>เพิ่มสินค้าใหม่</h3>
+            <h3>เพิ่มสินค้า</h3>
             <input type="text" id="pName" placeholder="ชื่อสินค้า">
-            <input type="number" id="pPrice" placeholder="ราคาขาย">
-            <input type="number" id="pOriginalPrice" placeholder="ราคาเต็ม (ถ้ามี)">
-            <input type="text" id="pBadge" placeholder="ป้ายกำกับ (เช่น ลด 50%, ขายดี)">
+            <input type="number" id="pPrice" placeholder="ราคา">
+            <input type="number" id="pOriginalPrice" placeholder="ราคาเดิม">
+            <input type="text" id="pBadge" placeholder="ป้ายกำกับ">
             <select id="pCategorySelect"></select>
-            <input type="file" id="pImage" accept="image/*">
-            <div class="modal-actions">
-                <button onclick="closeModal('productModal')">ยกเลิก</button>
-                <button class="btn-add" id="btnSaveProduct" onclick="addProduct()">บันทึกสินค้า</button>
-            </div>
+            <input type="file" id="pImage">
+            <button class="btn-add" id="btnSaveProduct" onclick="addProduct()">บันทึก</button>
+            <button onclick="closeModal('productModal')">ยกเลิก</button>
         </div>
     </div>
 
-    <!-- Promo Modal -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <h3>เพิ่มโปรโมชั่น</h3>
-            <input type="text" id="promoTitle" placeholder="หัวข้อโปรโมชั่น">
-            <input type="text" id="promoExpire" placeholder="วันหมดอายุ (เช่น 31 ธ.ค. 67)">
-            <input type="file" id="promoImage" accept="image/*">
-            <div class="modal-actions">
-                <button onclick="closeModal('promoModal')">ยกเลิก</button>
-                <button class="btn-add" id="btnSavePromo" onclick="addPromotion()">บันทึกโปรโมชั่น</button>
-            </div>
+            <input type="text" id="promoTitle" placeholder="หัวข้อ">
+            <input type="text" id="promoExpire" placeholder="วันหมดอายุ">
+            <input type="file" id="promoImage">
+            <button class="btn-add" id="btnSavePromo" onclick="addPromotion()">บันทึก</button>
+            <button onclick="closeModal('promoModal')">ยกเลิก</button>
         </div>
     </div>
 
-    <!-- Image View Modal -->
     <div class="modal-overlay" id="imageModal" onclick="closeImageModal()">
         <img id="fullImage" src="" onclick="event.stopPropagation(); toggleZoomImage(this)">
     </div>
@@ -487,7 +167,7 @@
 
         function applyAdminState() {
             if(isAdmin) {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'flex');
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'inline-block');
                 document.getElementById('lockBtn').classList.add('active');
                 document.getElementById('lockIcon').className = 'fa-solid fa-lock-open';
             } else {
@@ -529,7 +209,7 @@
             const parentSelect = document.getElementById('parentCatSelect');
             
             pSelect.innerHTML = '<option value="">-- ไม่ระบุหมวดหมู่ --</option>';
-            parentSelect.innerHTML = '<option value="">-- เป็นหมวดหมู่หลัก (Root) --</option>';
+            parentSelect.innerHTML = '<option value="">-- หมวดหมู่หลัก --</option>';
 
             const parents = allCategories.filter(c => !c.parent_id);
 
@@ -539,18 +219,18 @@
 
                 const children = allCategories.filter(c => c.parent_id === p.id);
                 children.forEach(ch => {
-                    pSelect.innerHTML += `<option value="${ch.id}">&nbsp;&nbsp;&nbsp;&nbsp;↳ 📄 ${p.name} > ${ch.name}</option>`;
+                    pSelect.innerHTML += `<option value="${ch.id}">&nbsp;&nbsp;↳ 📄 ${ch.name}</option>`;
                 });
             });
 
             const treeContainer = document.getElementById('categoryTree');
-            let html = '<div class="cat-item-btn" onclick="filterByCategory(null)">📋 สินค้าทั้งหมด</div>';
+            let html = '<div class="cat-item-btn" onclick="filterByCategory(null)">📋 ทั้งหมด</div>';
 
             parents.forEach(p => {
                 const children = allCategories.filter(c => c.parent_id === p.id);
                 if(children.length > 0) {
                     html += `<details open><summary>📁 ${p.name}</summary><div class="sub-category">
-                        <div class="cat-item-btn" onclick="filterByCategory(${p.id})">📂 ดูทั้งหมดใน ${p.name}</div>
+                        <div class="cat-item-btn" onclick="filterByCategory(${p.id})">📂 ดูทั้งหมด</div>
                         ${children.map(ch => `<div class="cat-item-btn" onclick="filterByCategory(${ch.id})">↳ 📄 ${ch.name}</div>`).join('')}
                     </div></details>`;
                 } else {
@@ -582,15 +262,15 @@
 
         function renderPromotions(promos) {
             const container = document.getElementById('promoList');
-            if(promos.length === 0) { container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; padding:10px;">ไม่มีโปรโมชั่นในขณะนี้</div>'; return; }
+            if(promos.length === 0) { container.innerHTML = '<div style="color:#888; font-size:12px;">ไม่มีโปรโมชั่น</div>'; return; }
             
             container.innerHTML = promos.map(p => `
                 <div class="promo-card" onclick="openImageModal('${p.image_url}')">
-                    ${isAdmin ? `<button class="btn-delete-card" onclick="event.stopPropagation(); deletePromotion(${p.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${isAdmin ? `<button class="btn-delete-card" onclick="event.stopPropagation(); deletePromotion(${p.id})">×</button>` : ''}
                     <img src="${p.image_url}" loading="lazy">
-                    <div style="font-size:11px; opacity:0.8; margin-top:4px;">ถึง ${p.expire_date || 'ระบุ'}</div>
-                    <div style="font-weight:bold; font-size:13px;">${p.title}</div>
-                    <div class="hint-text"><i class="fa-solid fa-magnifying-glass-plus"></i> กดเพื่อดูรูปใหญ่</div>
+                    <div style="font-size:10px; color:#666;">ถึง ${p.expire_date || '-'}</div>
+                    <div style="font-size:12px; font-weight:bold;">${p.title}</div>
+                    <div class="hint-text"><i class="fa-solid fa-magnifying-glass-plus"></i> ขยาย</div>
                 </div>
             `).join('');
         }
@@ -603,20 +283,20 @@
 
         function renderProducts(products) {
             const grid = document.getElementById('productList');
-            if(products.length === 0) { grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#888;">ไม่พบสินค้า</div>'; return; }
+            if(products.length === 0) { grid.innerHTML = '<div style="color:#888;">ไม่พบสินค้า</div>'; return; }
 
             grid.innerHTML = products.map(p => `
                 <div class="product-card">
-                    ${isAdmin ? `<button class="btn-delete-card" style="top:5px; right:5px;" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${isAdmin ? `<button class="btn-delete-card" onclick="deleteProduct(${p.id})">×</button>` : ''}
                     ${p.badge_label ? `<span class="badge">${p.badge_label}</span>` : ''}
                     
                     <div class="product-img-box" onclick="openImageModal('${p.image_url || ''}')">
                         ${p.image_url 
-                            ? `<img src="${p.image_url}" loading="lazy" alt="${p.name}">` 
-                            : `<i class="fa-solid fa-box-open fa-2x" style="color:#a8a29e;"></i>`}
+                            ? `<img src="${p.image_url}" loading="lazy">` 
+                            : `<i class="fa-solid fa-box fa-2x" style="color:#ccc;"></i>`}
                     </div>
 
-                    <div style="font-size:13px; font-weight:bold;">${p.name}</div>
+                    <div style="font-size:13px; font-weight:bold; margin-top:5px;">${p.name}</div>
                     <div class="price">฿${p.price} ${p.original_price ? `<span class="old-price">฿${p.original_price}</span>` : ''}</div>
                 </div>
             `).join('');
@@ -644,7 +324,7 @@
             if(!name) return alert('ใส่ชื่อหมวดหมู่');
 
             const { error } = await _supabase.from('categories').insert([{ name, parent_id }]);
-            if (error) alert('เพิ่มหมวดหมู่ไม่สำเร็จ: ' + error.message);
+            if (error) alert('ผิดพลาด: ' + error.message);
             else {
                 document.getElementById('newCatName').value = '';
                 loadCategories();
@@ -652,19 +332,16 @@
         }
 
         async function deleteCategory(id) {
-            if(!confirm('ยืนยันการลบหมวดหมู่นี้?')) return;
+            if(!confirm('ยืนยันลบหมวดหมู่นี้?')) return;
 
-            // Step 1: ปลดความสัมพันธ์ของหมวดหมู่อย่อยให้กลายเป็น null ก่อน
+            // ปลดความสัมพันธ์ของ Sub-category และ Product ก่อนลบ
             await _supabase.from('categories').update({ parent_id: null }).eq('parent_id', id);
-
-            // Step 2: ปลดสินค้าในหมวดหมู่นี้ให้กลายเป็นไม่มีหมวดหมู่ (null) ก่อน
             await _supabase.from('products').update({ category_id: null }).eq('category_id', id);
 
-            // Step 3: สั่งลบหมวดหมู่
             const { error } = await _supabase.from('categories').delete().eq('id', id);
             
             if (error) {
-                alert('ลบหมวดหมู่ไม่สำเร็จ: ' + error.message);
+                alert('ลบไม่สำเร็จ: ' + error.message);
             } else {
                 loadCategories();
                 loadProducts();
@@ -683,7 +360,7 @@
 
             const saveBtn = document.getElementById('btnSaveProduct');
             saveBtn.disabled = true;
-            saveBtn.innerText = 'กำลังบันทึก...';
+            saveBtn.innerText = 'บันทึก...';
 
             let image_url = null;
 
@@ -692,9 +369,9 @@
                 const { error: uploadErr } = await _supabase.storage.from('images').upload(fileName, file);
                 
                 if (uploadErr) {
-                    alert('อัปโหลดรูปภาพไม่สำเร็จ: ' + uploadErr.message);
+                    alert('รูปอัปโหลดไม่สำเร็จ: ' + uploadErr.message);
                     saveBtn.disabled = false;
-                    saveBtn.innerText = 'บันทึกสินค้า';
+                    saveBtn.innerText = 'บันทึก';
                     return;
                 }
 
@@ -707,10 +384,10 @@
             }]);
 
             saveBtn.disabled = false;
-            saveBtn.innerText = 'บันทึกสินค้า';
+            saveBtn.innerText = 'บันทึก';
 
             if (error) {
-                alert('เพิ่มสินค้าไม่สำเร็จ: ' + error.message);
+                alert('ผิดพลาด: ' + error.message);
             } else {
                 document.getElementById('pName').value = '';
                 document.getElementById('pPrice').value = '';
@@ -725,7 +402,7 @@
         async function deleteProduct(id) {
             if(!confirm('ยืนยันลบสินค้านี้?')) return;
             const { error } = await _supabase.from('products').delete().eq('id', id);
-            if (error) alert('ลบสินค้าไม่สำเร็จ: ' + error.message);
+            if (error) alert('ลบไม่สำเร็จ: ' + error.message);
             else loadProducts();
         }
 
@@ -738,15 +415,15 @@
             
             const saveBtn = document.getElementById('btnSavePromo');
             saveBtn.disabled = true;
-            saveBtn.innerText = 'กำลังบันทึก...';
+            saveBtn.innerText = 'บันทึก...';
 
             const fileName = 'promo_' + Date.now() + '_' + file.name;
             const { error: uploadErr } = await _supabase.storage.from('images').upload(fileName, file);
             
             if(uploadErr) {
-                alert('อัปโหลดรูปไม่สำเร็จ: ' + uploadErr.message);
+                alert('อัปโหลดไม่สำเร็จ: ' + uploadErr.message);
                 saveBtn.disabled = false;
-                saveBtn.innerText = 'บันทึกโปรโมชั่น';
+                saveBtn.innerText = 'บันทึก';
                 return;
             }
 
@@ -754,9 +431,9 @@
             const { error } = await _supabase.from('promotions').insert([{ title, expire_date, image_url: publicUrl }]);
 
             saveBtn.disabled = false;
-            saveBtn.innerText = 'บันทึกโปรโมชั่น';
+            saveBtn.innerText = 'บันทึก';
 
-            if (error) alert('เพิ่มโปรโมชั่นไม่สำเร็จ: ' + error.message);
+            if (error) alert('ผิดพลาด: ' + error.message);
             else {
                 document.getElementById('promoTitle').value = '';
                 document.getElementById('promoExpire').value = '';
@@ -767,9 +444,9 @@
         }
 
         async function deletePromotion(id) {
-            if(!confirm('ยืนยันลบโปรโมชั่นนี้?')) return;
+            if(!confirm('ยืนยันลบโปรโมชั่น?')) return;
             const { error } = await _supabase.from('promotions').delete().eq('id', id);
-            if (error) alert('ลบโปรโมชั่นไม่สำเร็จ: ' + error.message);
+            if (error) alert('ลบไม่สำเร็จ: ' + error.message);
             else loadPromotions();
         }
 
