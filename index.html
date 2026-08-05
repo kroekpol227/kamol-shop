@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กมลพานิช - แคตตาล็อกสินค้า</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #fcf9f2;
+            --card-bg: #ffffff;
+            --primary-brown: #78350f;
+            --accent-gold: #d97706;
+            --gold-hover: #b45309;
+            --text-dark: #292524;
+            --text-muted: #78716c;
+            --border-color: #e7e5e4;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; }
+        .container { max-width: 480px; margin: 0 auto; padding: 15px; }
+
+        /* Top Nav */
+        .top-nav { display: flex; justify-content: flex-end; padding: 5px 0 10px 0; }
+        .admin-lock-btn {
+            background: #fef3c7; color: var(--accent-gold); border: 1px solid #fde68a;
+            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 15px; transition: all 0.2s;
+        }
+        .admin-lock-btn.active { background: var(--accent-gold); color: #fff; border-color: var(--gold-hover); }
+
+        /* Header */
+        .header { background: var(--primary-brown); color: white; padding: 20px 15px; border-radius: 16px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(120, 53, 15, 0.15); }
+        .header h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .header .subtitle { font-size: 12px; opacity: 0.9; margin-bottom: 12px; }
+        .search-box { width: 100%; padding: 10px 15px; border-radius: 20px; border: none; outline: none; font-size: 13px; background: rgba(255, 255, 255, 0.95); }
+
+        /* Store Info Card */
+        .store-info-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: #44403c;
+            line-height: 1.4;
+        }
+        .info-item:last-child { margin-bottom: 0; }
+        .info-item i { color: var(--accent-gold); font-size: 15px; margin-top: 2px; }
+        .contact-btns { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-contact {
+            flex: 1; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 12px;
+            font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
+        }
+        .btn-call { background: #16a34a; color: white; }
+        .btn-map { background: #fef3c7; color: var(--gold-hover); border: 1px solid #fde68a; }
+
+        /* Admin Controls */
+        .admin-control-panel { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-admin-action {
+            flex: 1; padding: 9px; border-radius: 10px; border: 1px solid var(--accent-gold);
+            background: #fffbe3; color: var(--gold-hover); font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+        }
+
+        /* Category Section */
+        .category-card { background: var(--card-bg); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .category-title { font-weight: bold; font-size: 14px; margin-bottom: 8px; color: var(--primary-brown); }
+        details { margin: 4px 0; font-size: 13px; }
+        summary { font-weight: 600; cursor: pointer; padding: 6px 8px; border-radius: 6px; color: #444; }
+        summary:hover { background: #f5f5f4; }
+        .sub-category { padding-left: 18px; border-left: 2px solid #f5f5f4; margin-left: 8px; }
+        .cat-item-btn { padding: 5px 8px; border-radius: 6px; cursor: pointer; color: #57534e; display: block; }
+        .cat-item-btn:hover { background: #fafaf9; color: var(--accent-gold); }
+
+        /* Promo Section */
+        .section-title { font-size: 15px; font-weight: bold; color: var(--primary-brown); margin: 15px 0 10px 0; display: flex; align-items: center; gap: 6px; }
+        .promo-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .promo-card { min-width: 200px; background: var(--primary-brown); color: white; border-radius: 12px; padding: 10px; flex-shrink: 0; position: relative; cursor: pointer; }
+        .promo-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; display: block; }
+        .promo-card .hint-text { font-size: 10px; opacity: 0.8; text-align: center; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        
+        .btn-delete-card {
+            position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9);
+            color: white; border: none; width: 26px; height: 26px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; z-index: 10;
+        }
+
+        /* Product Grid */
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; position: relative; }
+        .product-img-box { width: 100%; height: 110px; background: #f5f5f4; border-radius: 8px; margin-bottom: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; font-weight: bold; z-index: 5; }
+        .price { color: var(--accent-gold); font-weight: bold; font-size: 15px; margin-top: 4px; }
+        .old-price { color: #a8a29e; text-decoration: line-through; font-size: 11px; margin-left: 4px; }
+
+        /* Modal System */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: #fff; border-radius: 16px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .modal-title { font-size: 15px; font-weight: bold; color: var(--primary-brown); }
+        .close-btn { background: none; border: none; color: #a8a29e; font-size: 18px; cursor: pointer; }
+        .form-group { margin-bottom: 10px; }
+        .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; }
+        .btn-submit { width: 100%; padding: 10px; background: var(--accent-gold); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        .cat-tree-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #fafaf9; border-radius: 6px; margin-bottom: 4px; font-size: 13px; }
+        .cat-tree-item.child { margin-left: 15px; border-left: 2px solid var(--accent-gold); }
+
+        /* Lightbox Image Preview Modal */
+        .image-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;
+            padding: 10px; overflow-y: auto;
+        }
+        .image-modal-content { position: relative; max-width: 95%; max-height: 95vh; margin: auto; }
+        .image-modal-content img { width: 100%; max-width: 500px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+        .close-image-btn {
+            position: fixed; top: 15px; right: 20px; color: white; font-size: 28px;
+            cursor: pointer; background: rgba(0,0,0,0.5); width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2010;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Nav -->
+        <div class="top-nav">
+            <button class="admin-lock-btn" id="lockBtn" onclick="openPinModal()" title="Admin Login">
+                <i class="fa-solid fa-lock" id="lockIcon"></i>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h2>กมลพานิช</h2>
+            <div class="subtitle">บรรจุภัณฑ์ • อุปโภคบริโภค • เบ็ดเตล็ด</div>
+            <input type="text" class="search-box" placeholder="🔍 ค้นหาสินค้า เช่น ถุงแก้ว, น้ำปลา..." oninput="filterProducts(this.value)">
+        </div>
+
+        <!-- Store Info Card -->
+        <div class="store-info-card">
+            <div class="info-item">
+                <i class="fa-solid fa-store"></i>
+                <div>ลูกค้าสามารถติดต่อ<strong>รับสินค้าที่หน้าร้าน</strong>ได้</div>
+            </div>
+            <div class="info-item">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                <div>มีบริการจัดส่งบางพื้นที่ (สอบถามรายละเอียดเพิ่มเติม)</div>
+            </div>
+            <div class="contact-btns">
+                <a href="tel:0880406069" class="btn-contact btn-call">
+                    <i class="fa-solid fa-phone"></i> ฝ่ายขาย: 088-0406069
+                </a>
+                <a href="https://maps.app.goo.gl/vp5E2RnS1FfCo2yW6" target="_blank" class="btn-contact btn-map">
+                    <i class="fa-solid fa-location-dot"></i> แผนที่หน้าร้าน
+                </a>
+            </div>
+        </div>
+
+        <!-- Admin Control Panel -->
+        <div class="admin-control-panel admin-only" style="display:none;">
+            <button class="btn-admin-action" onclick="openModal('categoryModal')"><i class="fa-solid fa-folder-plus"></i> หมวดหมู่</button>
+            <button class="btn-admin-action" onclick="openModal('productModal')"><i class="fa-solid fa-cart-plus"></i> เพิ่มสินค้า</button>
+            <button class="btn-admin-action" onclick="openModal('promoModal')"><i class="fa-solid fa-image"></i> เพิ่มโปร</button>
+        </div>
+
+        <!-- Category Section -->
+        <div class="category-card">
+            <div class="category-title">📂 หมวดหมู่สินค้า</div>
+            <div id="categoryTree">
+                <div class="cat-item-btn" onclick="filterByCategory(null)">📋 สินค้าทั้งหมด</div>
+            </div>
+        </div>
+
+        <!-- Promotions Section -->
+        <div class="section-title"><i class="fa-solid fa-fire" style="color:var(--accent-gold);"></i> โปรโมชั่นพิเศษ</div>
+        <div class="promo-scroll" id="promoList">
+            <div style="color:var(--text-muted); font-size:12px; padding:10px;">ไม่มีโปรโมชั่นในขณะนี้</div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="section-title"><i class="fa-solid fa-boxes-stacked"></i> รายการสินค้า</div>
+        <div class="product-grid" id="productList"></div>
+    </div>
+
+    <!-- Modal: PIN Input -->
+    <div class="modal" id="pinModal">
+        <div class="modal-content" style="max-width:300px; text-align:center;">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-key"></i> ยืนยันรหัส Admin</div>
+                <button class="close-btn" onclick="closeModal('pinModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="password" id="pinInput" class="form-control" placeholder="รหัสผ่าน (1234)" style="text-align:center; font-size:16px;">
+            <button class="btn-submit" onclick="verifyPin()">เข้าสู่ระบบ</button>
+        </div>
+    </div>
+
+    <!-- Modal: Category Management -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-folder-tree"></i> จัดการหมวดหมู่</div>
+                <button class="close-btn" onclick="closeModal('categoryModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="background:#f5f5f4; padding:10px; border-radius:8px; margin-bottom:12px;">
+                <div class="form-group">
+                    <label class="form-label">ชื่อหมวดหมู่ใหม่</label>
+                    <input type="text" id="newCatName" class="form-control" placeholder="เช่น ถุงพลาสติก">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">หมวดหมู่หลัก (หากต้องการทำเป็นหมวดหมู่อย่อย)</label>
+                    <select id="parentCatSelect" class="form-control"></select>
+                </div>
+                <button class="btn-submit" onclick="addCategory()">+ บันทึกหมวดหมู่</button>
+            </div>
+            <div style="font-size:12px; font-weight:bold; margin-bottom:6px;">รายการหมวดหมู่ปัจจุบัน</div>
+            <div id="adminCatTreeList"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Product (อัปเดตช่องเลือกไฟล์รูปภาพ) -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-plus"></i> เพิ่มสินค้าใหม่</div>
+                <button class="close-btn" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-group"><label class="form-label">ชื่อสินค้า</label><input type="text" id="pName" class="form-control"></div>
+            <div class="form-group"><label class="form-label">ราคาขาย (บาท)</label><input type="number" id="pPrice" class="form-control"></div>
+            <div class="form-group"><label class="form-label">ราคาเดิม (ถ้ามี)</label><input type="number" id="pOriginalPrice" class="form-control"></div>
+            <div class="form-group"><label class="form-label">ป้ายกำกับ (Badge)</label><input type="text" id="pBadge" class="form-control" placeholder="เช่น ขายดี"></div>
+            <div class="form-group"><label class="form-label">หมวดหมู่</label><select id="pCategorySelect" class="form-control"></select></div>
+            <div class="form-group"><label class="form-label">รูปภาพสินค้า</label><input type="file" id="pImage" class="form-control" accept="image/*"></div>
+            <button class="btn-submit" id="btnSaveProduct" onclick="addProduct()">บันทึกสินค้า</button>
+        </div>
+    </div>
+
+    <!-- Modal: Add Promotion -->
+    <div class="modal" id="promoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-bullhorn"></i> เพิ่มโปรโมชั่น</div>
+                <button class="close-btn" onclick="closeModal('promoModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-group"><label class="form-label">หัวข้อโปรโมชั่น</label><input type="text" id="promoTitle" class="form-control"></div>
+            <div class="form-group"><label class="form-label">วันหมดอายุ</label><input type="text" id="promoExpire" class="form-control" placeholder="เช่น ถึง 31 ส.ค. 69"></div>
+            <div class="form-group"><label class="form-label">รูปภาพโปรโมชั่น</label><input type="file" id="promoImage" class="form-control" accept="image/*"></div>
+            <button class="btn-submit" id="btnSavePromo" onclick="addPromotion()">บันทึกโปรโมชั่น</button>
+        </div>
+    </div>
+
+    <!-- Modal: Lightbox Full Image View -->
+    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+        <span class="close-image-btn" onclick="closeImageModal()"><i class="fa-solid fa-xmark"></i></span>
+        <div class="image-modal-content" onclick="event.stopPropagation()">
+            <img id="fullImage" src="" alt="รูปขยายเต็มจอ">
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://lbpwezrhnzwierbngmls.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_0N9zE7A4bkNB1rEQ82nW3A_ftwcfJZq';
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let allCategories = [];
+        let allProducts = [];
+        let allPromos = [];
+        let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function openImageModal(url) {
+            if(!url) return;
+            document.getElementById('fullImage').src = url;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.getElementById('fullImage').src = '';
+        }
+
+        function applyAdminState() {
+            if(isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'flex');
+                document.getElementById('lockBtn').classList.add('active');
+                document.getElementById('lockIcon').className = 'fa-solid fa-lock-open';
+            } else {
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'none');
+                document.getElementById('lockBtn').classList.remove('active');
+                document.getElementById('lockIcon').className = 'fa-solid fa-lock';
+            }
+            renderProducts(allProducts);
+            renderPromotions(allPromos);
+        }
+
+        function openPinModal() {
+            if(isAdmin) {
+                isAdmin = false;
+                localStorage.removeItem('isAdmin');
+                applyAdminState();
+            } else { 
+                openModal('pinModal'); 
+            }
+        }
+
+        function verifyPin() {
+            if(document.getElementById('pinInput').value === '1234') {
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                applyAdminState();
+                closeModal('pinModal');
+                document.getElementById('pinInput').value = '';
+            } else {
+                alert('รหัสผ่านไม่ถูกต้อง');
+            }
+        }
+
+        async function loadCategories() {
+            const { data } = await _supabase.from('categories').select('*');
+            allCategories = data || [];
+            
+            const pSelect = document.getElementById('pCategorySelect');
+            const parentSelect = document.getElementById('parentCatSelect');
+            pSelect.innerHTML = '<option value="">-- ไม่ระบุหมวดหมู่ --</option>';
+            parentSelect.innerHTML = '<option value="">-- เป็นหมวดหมู่หลัก (Root) --</option>';
+
+            allCategories.forEach(c => {
+                pSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                parentSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            const treeContainer = document.getElementById('categoryTree');
+            const parents = allCategories.filter(c => !c.parent_id);
+            let html = '<div class="cat-item-btn" onclick="filterByCategory(null)">📋 สินค้าทั้งหมด</div>';
+
+            parents.forEach(p => {
+                const children = allCategories.filter(c => c.parent_id === p.id);
+                if(children.length > 0) {
+                    html += `<details><summary>📁 ${p.name}</summary><div class="sub-category">
+                        ${children.map(ch => `<div class="cat-item-btn" onclick="filterByCategory(${ch.id})">📄 ${ch.name}</div>`).join('')}
+                    </div></details>`;
+                } else {
+                    html += `<div class="cat-item-btn" onclick="filterByCategory(${p.id})">📁 ${p.name}</div>`;
+                }
+            });
+            treeContainer.innerHTML = html;
+            renderAdminCatTree();
+        }
+
+        function renderAdminCatTree() {
+            const container = document.getElementById('adminCatTreeList');
+            const parents = allCategories.filter(c => !c.parent_id);
+            let html = '';
+            parents.forEach(p => {
+                html += `<div class="cat-tree-item"><span>📁 ${p.name}</span><i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;" onclick="deleteCategory(${p.id})"></i></div>`;
+                allCategories.filter(c => c.parent_id === p.id).forEach(ch => {
+                    html += `<div class="cat-tree-item child"><span>↳ 📄 ${ch.name}</span><i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;" onclick="deleteCategory(${ch.id})"></i></div>`;
+                });
+            });
+            container.innerHTML = html || 'ไม่มีหมวดหมู่';
+        }
+
+        async function loadPromotions() {
+            const { data } = await _supabase.from('promotions').select('*');
+            allPromos = data || [];
+            renderPromotions(allPromos);
+        }
+
+        function renderPromotions(promos) {
+            const container = document.getElementById('promoList');
+            if(promos.length === 0) { container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; padding:10px;">ไม่มีโปรโมชั่นในขณะนี้</div>'; return; }
+            
+            container.innerHTML = promos.map(p => `
+                <div class="promo-card" onclick="openImageModal('${p.image_url}')">
+                    ${isAdmin ? `<button class="btn-delete-card" onclick="event.stopPropagation(); deletePromotion(${p.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    <img src="${p.image_url}" loading="lazy">
+                    <div style="font-size:11px; opacity:0.8; margin-top:4px;">ถึง ${p.expire_date || 'ระบุ'}</div>
+                    <div style="font-weight:bold; font-size:13px;">${p.title}</div>
+                    <div class="hint-text"><i class="fa-solid fa-magnifying-glass-plus"></i> กดเพื่อดูรูปใหญ่</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadProducts() {
+            const { data } = await _supabase.from('products').select('*');
+            allProducts = data || [];
+            renderProducts(allProducts);
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productList');
+            if(products.length === 0) { grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#888;">ไม่พบสินค้า</div>'; return; }
+
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    ${isAdmin ? `<button class="btn-delete-card" style="top:5px; right:5px;" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${p.badge_label ? `<span class="badge">${p.badge_label}</span>` : ''}
+                    
+                    <div class="product-img-box" onclick="openImageModal('${p.image_url || ''}')">
+                        ${p.image_url 
+                            ? `<img src="${p.image_url}" loading="lazy" alt="${p.name}">` 
+                            : `<i class="fa-solid fa-box-open fa-2x" style="color:#a8a29e;"></i>`}
+                    </div>
+
+                    <div style="font-size:13px; font-weight:bold;">${p.name}</div>
+                    <div class="price">฿${p.price} ${p.original_price ? `<span class="old-price">฿${p.original_price}</span>` : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(catId) {
+            if(!catId) renderProducts(allProducts);
+            else renderProducts(allProducts.filter(p => p.category_id === catId));
+        }
+
+        function filterProducts(keyword) {
+            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())));
+        }
+
+        // Actions
+        async function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            const parent_id = document.getElementById('parentCatSelect').value || null;
+            if(!name) return alert('ใส่ชื่อหมวดหมู่');
+
+            const { error } = await _supabase.from('categories').insert([{ name, parent_id }]);
+            if (error) alert('เพิ่มหมวดหมู่ไม่สำเร็จ: ' + error.message);
+            else {
+                document.getElementById('newCatName').value = '';
+                loadCategories();
+            }
+        }
+
+        async function deleteCategory(id) {
+            if(!confirm('ยืนยันลบหมวดหมู่นี้?')) return;
+            const { error } = await _supabase.from('categories').delete().eq('id', id);
+            if (error) alert('ลบหมวดหมู่ไม่สำเร็จ (อาจมีสินค้าหรือหมวดหมู่อย่อยอยู่): ' + error.message);
+            else loadCategories();
+        }
+
+        // ฟังก์ชันเพิ่มสินค้า (รองรับอัปโหลดรูปภาพ)
+        async function addProduct() {
+            const name = document.getElementById('pName').value;
+            const price = document.getElementById('pPrice').value;
+            const original_price = document.getElementById('pOriginalPrice').value || null;
+            const badge_label = document.getElementById('pBadge').value;
+            const category_id = document.getElementById('pCategorySelect').value || null;
+            const file = document.getElementById('pImage').files[0];
+
+            if(!name || !price) return alert('กรอกชื่อและราคา');
+
+            const saveBtn = document.getElementById('btnSaveProduct');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'กำลังบันทึก...';
+
+            let image_url = null;
+
+            // ถ้ามีการเลือกไฟล์รูป ให้ทำการอัปโหลดไปยัง Supabase Storage
+            if (file) {
+                const fileName = 'product_' + Date.now() + '_' + file.name;
+                const { error: uploadErr } = await _supabase.storage.from('images').upload(fileName, file);
+                
+                if (uploadErr) {
+                    alert('อัปโหลดรูปภาพไม่สำเร็จ: ' + uploadErr.message + '\n* กรุณาตรวจสอบว่ามี Bucket "images" ใน Supabase หรือยัง');
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = 'บันทึกสินค้า';
+                    return;
+                }
+
+                const { data: { publicUrl } } = _supabase.storage.from('images').getPublicUrl(fileName);
+                image_url = publicUrl;
+            }
+
+            // บันทึกข้อมูลลงตาราง products
+            const { error } = await _supabase.from('products').insert([{ 
+                name, 
+                price, 
+                original_price, 
+                badge_label, 
+                category_id,
+                image_url 
+            }]);
+
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'บันทึกสินค้า';
+
+            if (error) {
+                alert('เพิ่มสินค้าไม่สำเร็จ: ' + error.message + '\n* ตรวจสอบว่าในตาราง products มีคอลัมน์ "image_url" แล้วหรือยัง');
+            } else {
+                // ล้างค่าใน ฟอร์ม
+                document.getElementById('pName').value = '';
+                document.getElementById('pPrice').value = '';
+                document.getElementById('pOriginalPrice').value = '';
+                document.getElementById('pBadge').value = '';
+                document.getElementById('pImage').value = '';
+                
+                closeModal('productModal');
+                loadProducts();
+            }
+        }
+
+        async function deleteProduct(id) {
+            if(!confirm('ยืนยันลบสินค้านี้?')) return;
+            const { error } = await _supabase.from('products').delete().eq('id', id);
+            if (error) alert('ลบสินค้าไม่สำเร็จ: ' + error.message);
+            else loadProducts();
+        }
+
+        async function addPromotion() {
+            const title = document.getElementById('promoTitle').value;
+            const expire_date = document.getElementById('promoExpire').value;
+            const file = document.getElementById('promoImage').files[0];
+
+            if(!title || !file) return alert('กรอกข้อมูลให้ครบ');
+            
+            const saveBtn = document.getElementById('btnSavePromo');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'กำลังบันทึก...';
+
+            const fileName = 'promo_' + Date.now() + '_' + file.name;
+            const { error: uploadErr } = await _supabase.storage.from('images').upload(fileName, file);
+            
+            if(uploadErr) {
+                alert('อัปโหลดรูปไม่สำเร็จ: ' + uploadErr.message);
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'บันทึกโปรโมชั่น';
+                return;
+            }
+
+            const { data: { publicUrl } } = _supabase.storage.from('images').getPublicUrl(fileName);
+            const { error } = await _supabase.from('promotions').insert([{ title, expire_date, image_url: publicUrl }]);
+
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'บันทึกโปรโมชั่น';
+
+            if (error) alert('เพิ่มโปรโมชั่นไม่สำเร็จ: ' + error.message);
+            else {
+                document.getElementById('promoTitle').value = '';
+                document.getElementById('promoExpire').value = '';
+                document.getElementById('promoImage').value = '';
+                closeModal('promoModal');
+                loadPromotions();
+            }
+        }
+
+        async function deletePromotion(id) {
+            if(!confirm('ยืนยันลบโปรโมชั่นนี้?')) return;
+            const { error } = await _supabase.from('promotions').delete().eq('id', id);
+            if (error) alert('ลบโปรโมชั่นไม่สำเร็จ: ' + error.message);
+            else loadPromotions();
+        }
+
+        // Init
+        applyAdminState();
+        loadCategories();
+        loadPromotions();
+        loadProducts();
+    </script>
+</body>
+</html>
