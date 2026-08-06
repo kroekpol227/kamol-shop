@@ -28,7 +28,6 @@
       100% { background-position: -200% 0; }
     }
 
-    /* ซ่อน Scrollbar แต่ยังไถได้ */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -77,48 +76,67 @@
             <span id="breadcrumb-path" class="flex items-center gap-1 text-gray-300"></span>
           </div>
 
-          <!-- ปุ่ม Admin จัดการหมวดหมู่ -->
-          <div class="admin-only hidden shrink-0 flex gap-1.5">
-            <button onclick="openModal('modal-manage-cat')" class="bg-amber-500 text-slate-900 font-bold px-2.5 py-1 rounded-lg text-xs flex items-center gap-1 shadow">
-              <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i> จัดการหมวดหมู่
+          <!-- ปุ่ม Admin จัดการระบบ -->
+          <div class="admin-only hidden shrink-0 flex gap-1">
+            <button onclick="openModal('modal-promo')" class="bg-rose-600 text-white font-bold px-2 py-1 rounded-lg text-xs flex items-center gap-1 shadow">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> + โปร
             </button>
-            <button onclick="openModal('modal-product')" class="bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg text-xs flex items-center gap-1 shadow">
+            <button onclick="openModal('modal-manage-cat')" class="bg-amber-500 text-slate-900 font-bold px-2 py-1 rounded-lg text-xs flex items-center gap-1 shadow">
+              <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i> หมวดหมู่
+            </button>
+            <button onclick="openModal('modal-product')" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded-lg text-xs flex items-center gap-1 shadow">
               <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> + สินค้า
             </button>
           </div>
         </div>
 
-        <!-- รายการหมวดหมู่อยู่ในระดับปัจจุบัน (Subcategory Pills) -->
+        <!-- รายการหมวดหมู่อยู่ในระดับปัจจุบัน -->
         <div id="subcategories-bar" class="flex gap-2 overflow-x-auto no-scrollbar mt-2 pt-1 border-t border-emerald-900/30">
-          <!-- Rendered via JS -->
         </div>
 
       </div>
     </section>
 
-    <!-- ส่วนแสดงสินค้า / ภาพแผ่นแคตตาล็อก -->
-    <main class="max-w-7xl mx-auto px-3 py-4">
-      <div class="flex justify-between items-center mb-3">
-        <h2 id="current-view-title" class="text-sm md:text-base font-bold text-amber-400 flex items-center gap-1.5">
-          <i data-lucide="grid" class="w-4 h-4"></i> รายการสินค้าทั้งหมด
-        </h2>
-        <span id="catalog-count" class="text-[11px] text-gray-400 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-800/50">0 รายการ</span>
-      </div>
+    <main class="max-w-7xl mx-auto px-3 py-4 space-y-6">
 
-      <!-- กริดแสดงแผ่นภาพแคตตาล็อกสินค้า -->
-      <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-4">
-        <!-- Rendered via JS -->
-      </div>
+      <!-- 🔥 ส่วนโปรโมชันฮิต / ป้ายพิเศษ (Promotion Section) -->
+      <section id="promo-section" class="w-full">
+        <div class="flex justify-between items-center mb-2.5">
+          <h2 class="text-sm md:text-base font-extrabold text-rose-400 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-rose-400"></i> โปรโมชันพิเศษสุดคุ้ม
+          </h2>
+          <span class="text-[10px] text-rose-300 bg-rose-950/60 border border-rose-800/40 px-2 py-0.5 rounded-full font-semibold">ข้อเสนอพิเศษ</span>
+        </div>
+
+        <!-- สไลด์โปรโมชันแนวนอน -->
+        <div id="promo-container" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- ส่วนแสดงสินค้า / ภาพแผ่นแคตตาล็อก -->
+      <section>
+        <div class="flex justify-between items-center mb-3">
+          <h2 id="current-view-title" class="text-sm md:text-base font-bold text-amber-400 flex items-center gap-1.5">
+            <i data-lucide="grid" class="w-4 h-4"></i> รายการสินค้าทั้งหมด
+          </h2>
+          <span id="catalog-count" class="text-[11px] text-gray-400 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-800/50">0 รายการ</span>
+        </div>
+
+        <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-4">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <!-- Footer -->
   <footer class="w-full bg-[#061512] border-t border-emerald-900/60 py-5 px-4 text-center text-xs text-gray-400 mt-6">
     <p class="font-bold text-amber-400 mb-0.5">กมลพาณิช แคตตาล็อกดิจิทัล</p>
     <p class="text-[10px] text-gray-500">แตะที่รูปสินค้าเพื่อดูภาพขยายความละเอียดสูง</p>
   </footer>
 
-  <!-- Lightbox สำหรับดูภาพใหญ่ (รองรับการปัดสำหรับมือถือ) -->
+  <!-- Lightbox แสดงภาพขยายใหญ่ -->
   <div id="image-lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-2 backdrop-blur-md">
     <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white bg-emerald-900/80 p-2 rounded-full border border-emerald-600/50">
       <i data-lucide="x" class="w-6 h-6"></i>
@@ -130,7 +148,34 @@
     </div>
   </div>
 
-  <!-- Modal Admin: จัดการหมวดหมู่แบบซ้อนหลายชั้น -->
+  <!-- Modal Admin: จัดการโปรโมชัน -->
+  <div id="modal-promo" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#122a22] border border-rose-700/50 rounded-2xl p-4 w-full max-w-md shadow-2xl">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-rose-900/60">
+        <h3 class="text-sm font-bold text-rose-400 flex items-center gap-1.5"><i data-lucide="sparkles" class="w-4 h-4"></i> เพิ่มโปรโมชันใหม่</h3>
+        <button onclick="closeModal('modal-promo')" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <form id="form-promo" class="space-y-2.5">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">ชื่อโปรโมชัน / รายละเอียด</label>
+          <input type="text" id="promo-title" required class="w-full bg-[#0a1f1a] border border-emerald-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">ราคาโปรโมชัน (ถ้ามี)</label>
+          <input type="text" id="promo-price" placeholder="เช่น พิเศษ 199.- หรือ ซื้อ 1 แถม 1" class="w-full bg-[#0a1f1a] border border-emerald-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">รูปภาพแบนเนอร์/ภาพโปรโมชัน</label>
+          <input type="file" id="promo-file" accept="image/*" class="w-full text-xs text-gray-300 bg-[#0a1f1a] rounded-xl border border-emerald-800 p-1.5">
+        </div>
+        <button type="submit" id="btn-submit-promo" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 rounded-xl text-xs mt-1 transition">
+          + เพิ่มโปรโมชัน
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Admin: จัดการหมวดหมู่ -->
   <div id="modal-manage-cat" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#122a22] border border-emerald-700/50 rounded-2xl p-4 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-800">
@@ -162,7 +207,7 @@
     </div>
   </div>
 
-  <!-- Modal Admin: เพิ่มสินค้า/หน้าแผ่นแคตตาล็อก -->
+  <!-- Modal Admin: เพิ่มสินค้า -->
   <div id="modal-product" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#122a22] border border-emerald-700/50 rounded-2xl p-4 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-emerald-800">
@@ -195,10 +240,8 @@
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygaYUXxWuoc87C_ZtdOpZ7GyhBOJownFVEdwgck3WfWPzENDP7BEagHHLKZmVbAHYfhg/exec";
     const ADMIN_PASSWORD = "1234";
-
     const PLACEHOLDER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2334d399' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/></svg>";
 
-    // โครงสร้างหมวดหมู่ซ้อนหมวดหมู่ตั้งต้น (Nested Category Structure)
     const initialCategoryTree = [
       { 
         id: 'cat-1', 
@@ -220,7 +263,11 @@
 
     let categoryTree = JSON.parse(localStorage.getItem('kamon_categories_v2')) || initialCategoryTree;
     let allProducts = [];
-    let currentPath = []; // เก็บ Stack ของหมวดหมู่ที่เลือก [Parent, Child, Sub-Child]
+    let allPromotions = JSON.parse(localStorage.getItem('kamon_promotions_v1')) || [
+      { id: 'p1', name: 'ชุดโปรเปิดร้าน ลด 10%', price: 'พิเศษ 299.-', imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&auto=format&fit=crop&q=60' }
+    ];
+
+    let currentPath = [];
     let isAdmin = false;
     let titleClickCount = 0;
 
@@ -229,12 +276,18 @@
       if (localStorage.getItem("kamon_admin_mode") === "true") isAdmin = true;
       updateAdminUI();
       refreshCategoriesUI();
+      renderPromotions();
       loadData();
     });
 
     function saveCategoryTree() {
       localStorage.setItem('kamon_categories_v2', JSON.stringify(categoryTree));
       refreshCategoriesUI();
+    }
+
+    function savePromotions() {
+      localStorage.setItem('kamon_promotions_v1', JSON.stringify(allPromotions));
+      renderPromotions();
     }
 
     function refreshCategoriesUI() {
@@ -259,6 +312,7 @@
         if(adminBtn) adminBtn.className = "bg-emerald-950/60 text-gray-400 border border-emerald-800/50 p-2 rounded-full backdrop-blur-sm transition";
       }
       lucide.createIcons();
+      renderPromotions();
     }
 
     function handleAdminToggle() {
@@ -291,7 +345,65 @@
       }
     }
 
-    /* === ระบบนำทางหมวดหมู่แบบ N-Level (Breadcrumbs & Navigation) === */
+    /* === 🔥 ส่วนแสดงโปรโมชัน (Promotions) === */
+    function renderPromotions() {
+      const container = document.getElementById("promo-container");
+      const section = document.getElementById("promo-section");
+
+      if (!allPromotions || allPromotions.length === 0) {
+        if (!isAdmin) {
+          section.classList.add("hidden");
+          return;
+        } else {
+          section.classList.remove("hidden");
+          container.innerHTML = `
+            <div class="w-full text-center py-6 text-xs text-rose-300 bg-rose-950/20 rounded-xl border border-rose-900/40">
+              ยังไม่มีโปรโมชัน กดปุ่ม "+ โปร" เพื่อเพิ่มโปรโมชันใหม่
+            </div>
+          `;
+          return;
+        }
+      }
+
+      section.classList.remove("hidden");
+      container.innerHTML = allPromotions.map(p => `
+        <div class="snap-start shrink-0 w-64 md:w-72 bg-gradient-to-b from-[#1a0f14] to-[#122a22] rounded-xl overflow-hidden border border-rose-800/50 shadow-lg flex flex-col justify-between">
+          <div onclick="openLightbox('${p.imageUrl || PLACEHOLDER_SVG}', '${p.name.replace(/'/g, "\\'")}', '${p.price || ''}')" class="cursor-pointer">
+            <div class="relative w-full h-32 bg-[#0a1f1a] img-skeleton overflow-hidden">
+              <img src="${p.imageUrl || PLACEHOLDER_SVG}" 
+                   alt="${p.name}" 
+                   loading="lazy"
+                   class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                   onload="this.parentElement.classList.remove('img-skeleton')"
+                   onerror="this.src='${PLACEHOLDER_SVG}'">
+              <span class="absolute top-2 left-2 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow">HOT PROMO</span>
+            </div>
+            <div class="p-2.5">
+              <h4 class="font-bold text-xs text-white line-clamp-1">${p.name}</h4>
+              <p class="text-rose-400 font-extrabold text-xs mt-0.5">${p.price || 'โปรโมชันพิเศษ'}</p>
+            </div>
+          </div>
+
+          <div class="admin-only ${isAdmin ? '' : 'hidden'} p-2 pt-0">
+            <button onclick="deletePromotion('${p.id}')" class="bg-red-600/20 text-red-300 border border-red-500/30 text-[10px] py-1 rounded-lg w-full flex items-center justify-center gap-1">
+              <i data-lucide="trash-2" class="w-3 h-3"></i> ลบโปรโมชัน
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function deletePromotion(id) {
+      if (confirm("ต้องการลบโปรโมชันนี้ใช่หรือไม่?")) {
+        allPromotions = allPromotions.filter(p => String(p.id) !== String(id));
+        savePromotions();
+        sendPostData({ action: "delete", sheetName: "Promotions", id });
+      }
+    }
+
+    /* === ระบบนำทางหมวดหมู่ === */
     function navigateToRoot() {
       currentPath = [];
       renderCategoryNavigation();
@@ -311,7 +423,6 @@
     }
 
     function renderCategoryNavigation() {
-      // 1. Render Breadcrumb Path
       const breadcrumbPath = document.getElementById("breadcrumb-path");
       breadcrumbPath.innerHTML = currentPath.map((node, idx) => `
         <i data-lucide="chevron-right" class="w-3 h-3 text-gray-500 shrink-0"></i>
@@ -320,7 +431,6 @@
         </button>
       `).join('');
 
-      // 2. Render Subcategory Pills ในระดับปัจจุบัน
       const subBar = document.getElementById("subcategories-bar");
       let currentChildren = categoryTree;
 
@@ -342,7 +452,6 @@
         `).join('');
       }
 
-      // ปรับแต่งหัวข้อตามหน้าปัจจุบัน
       const titleLabel = document.getElementById("current-view-title");
       if (currentPath.length === 0) {
         titleLabel.innerHTML = `<i data-lucide="grid" class="w-4 h-4 text-amber-400"></i> แคตตาล็อกทั้งหมด`;
@@ -359,6 +468,10 @@
         const res = await fetch(GOOGLE_SCRIPT_URL);
         const data = await res.json();
         allProducts = data.products || [];
+        if (data.promotions && data.promotions.length > 0) {
+          allPromotions = data.promotions;
+          savePromotions();
+        }
         renderCatalogGrid();
       } catch (err) {
         console.error("Load error:", err);
@@ -371,7 +484,6 @@
 
       let activeCategoryName = currentPath.length > 0 ? currentPath[currentPath.length - 1].name : 'ทั้งหมด';
 
-      // ฟังก์ชันรวบรวมชื่อหมวดหมู่ย่อยทั้งหมดที่ซ้อนอยู่ข้างใต้
       function getAllChildNames(node) {
         let names = [node.name];
         if (node.children) {
@@ -443,7 +555,6 @@
       lucide.createIcons();
     }
 
-    /* === Lightbox แสดงภาพขยายขนาดใหญ่ === */
     function openLightbox(src, title, price) {
       document.getElementById("lightbox-img").src = src;
       document.getElementById("lightbox-title").innerText = title;
@@ -455,7 +566,6 @@
       document.getElementById("image-lightbox").classList.add("hidden");
     }
 
-    /* === จัดการ Select หมวดหมู่สำหรับ Modal เพิ่มสินค้า / หมวดหมู่ === */
     function populateSubcatSelect() {
       const select = document.getElementById("prod-subcat");
       select.innerHTML = "";
@@ -566,7 +676,7 @@
       saveCategoryTree();
     }
 
-    /* === ระบบบีบอัดภาพเพื่อความเร็วสูงสุดบนมือถือ (3KB - 8KB WebP) === */
+    /* === ระบบบีบอัดภาพ WebP === */
     function compressImage(file, maxWidth = 300, quality = 0.25) {
       return new Promise((resolve) => {
         if (!file) return resolve({ fileData: null, fileName: null });
@@ -613,6 +723,38 @@
       });
     }
 
+    /* Form Submit: เพิ่มโปรโมชัน */
+    document.getElementById("form-promo").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-submit-promo");
+      btn.disabled = true;
+      btn.innerText = "กำลังบันทึก...";
+
+      try {
+        const file = document.getElementById("promo-file").files[0];
+        const imageData = await compressImage(file, 400, 0.3);
+        const tempId = "PR" + Date.now();
+
+        const name = document.getElementById("promo-title").value;
+        const price = document.getElementById("promo-price").value;
+        const imageUrl = imageData.fileData || PLACEHOLDER_SVG;
+
+        allPromotions.unshift({ id: tempId, name, price, imageUrl });
+        savePromotions();
+
+        closeModal('modal-promo');
+        e.target.reset();
+
+        await sendPostData({ action: "addPromotion", name, price, fileData: imageData.fileData, fileName: imageData.fileName });
+      } catch (err) {
+        alert("เกิดข้อผิดพลาดในการบันทึกโปรโมชัน");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "+ เพิ่มโปรโมชัน";
+      }
+    });
+
+    /* Form Submit: เพิ่มสินค้า */
     document.getElementById("form-product").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("btn-submit-prod");
